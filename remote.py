@@ -153,9 +153,9 @@ def aws():
             s3.create_bucket(Bucket=name,CreateBucketConfiguration={'LocationConstraint':loc})
         elif(n==3):
             size=int(input("Size :"))
-            AZ=input("Availability Zone :")
+            aZ=input("Availability Zone :")
             t=input('VOlumeType:like (gp2) :')
-            vol=ec2.create_volume(AvailabilityZone=AZ,Size=size,VolumeType=t)
+            vol=ec2.create_volume(AvailabilityZone=aZ,Size=size,VolumeType=t)
             print("volume created with id"+vol.volume_id)
         elif(n==4):
             vol=input("VOlume-id: ")
@@ -163,8 +163,8 @@ def aws():
             d=input("device-name(/dev/xvdf): ")
             if(d is None):
                 d='/dev/xvdf'
-            V=ec2.Volume(vol)
-            response=V.attach_to_instance(InstanceId=instance,Device=d)
+            v=ec2.Volume(vol)
+            response=v.attach_to_instance(InstanceId=instance,Device=d)
             print("Volume attached")
 
         elif(n==5):
