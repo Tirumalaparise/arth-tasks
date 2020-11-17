@@ -24,10 +24,10 @@ elif(n1=='l'):
     result()'''
 
 def date():
-    sp.getoutput('date')
+    print(sp.getoutput('date'))
 
 def cal():
-    sp.getoutput('cal')
+    print(sp.getoutput('cal'))
 
 def dataname():
     if(n==3):
@@ -36,8 +36,8 @@ def dataname():
         string="name"
     out=sp.getoutput('jps')
     out=out.split()
-    ip=input("Enter namenode ip")
-    folder=input("Enter distributed folder")
+    ip=input("Enter namenode ip: ")
+    folder=input("Enter distributed folder: ")
     core=et.parse('/etc/hadoop/core-site.xml')
     hdfs=et.parse('/etc/hadoop/hdfs-site.xml')
     croot=core.getroot()
@@ -73,8 +73,10 @@ def dataname():
         hdfs.write('/etc/hadoop/hdfs-site.xml')
         sp.getoutput("hadoop-daemon.sh start "+string+"node")
     print(string+"node is running")
-    sp.getoutput('jps')
+    print(sp.getoutput('jps'))
 def docker():
+    import docker
+    client=docker.from_env()
     sp.getoutput("systemctl start docker")
     print("1.pull an image\n \
             2.start a new container\n \
@@ -84,36 +86,50 @@ def docker():
             6.delete all containers\n \
             7.copy files between  base os and conatiner")
     n=int(input("choose which u want : "))
-    if(n==1):
-        image=input('Enter image name with version : ')
-        sp.getoutput('docker pull '+image)
-    elif(n==2):
-        print(sp.getoutput("docker images"))
-        container=input("Enter image to launch with name optionally as 'image n                          ame_to_container': ")
-        container=container.split()
-        print(container)
-        x=sp.getstatusoutput('docker run -it --name '+container[1]+" "+container[0])
-        print(x)
-    elif(n==3):
-        print(sp.getoutput("docker ps -a"))
-        s=input("[better to enter the container name]")
-        sp.getoutput("docker start "+s)
-        sp.getoutput("docker attach "+s)
-    elif(n==4):
-        c=input("Enter which container to delete : ")
-        sp.getoutput("docker rm -f "+c)
-    elif(n==5):
-        c=input("Enter which to delete to delete")
-        sp.getoutput("docker rmi -f "+c)
-    elif(n==7):
-        print("Enter the container file location like <container_name/ID:file_path>")
-        src=input("Enter source file location/path: ")
-        dest=input("Enter destination file location/path: ")
-        sp.getoutput("docker cp "+src+" "+dest)
-    elif(n==6):
-        sp.getoutput("docker rm `docker ps -a -q`")
-        sp.getoutput("docker ps -a")
-        print("containers were deleted")
+    while(n):
+        if(n==1):
+            image=input('Enter image name with version : ')
+            sp.getoutput('docker pull '+image)
+            print(client.images.list())
+        elif(n==2):
+            print('exiting images are: ')
+            for i in client.images.list():
+                print(i.tags[0],'\t',end="")
+            #print(sp.getoutput("docker images"))
+            container=input("\nImage name <Image tag_name>: ")
+            container=container.split()
+            #client.containers.run(container)
+            #print(container)
+            if(len(container)==2):
+                x=sp.run('docker run -it --name '+container[1]+" "+container[0],shell=True)
+            else:
+                x=sp.run('docker run -it'+container[0],shell=True)
+            print(x)
+        elif(n==3):
+            print(sp.getoutput("docker ps -a")) #client.containers.list(all)
+            s=input("container name/id: ")
+            x=sp.run("docker start "+s,shell=True) #conta=client.containers.start(s)
+            x=sp.run("docker attach "+s,shell=True) #conta.attach(True,True,True)
+        elif(n==4):
+            print(sp.getoutput('docker ps -a')) # client.images.list
+            c=input("Enter which container to delete : ")
+            x=sp.run("docker rm -f "+c,shell=True)
+        elif(n==5):
+            print(sp.getoutput('docker images'))
+            c=input("Enter which to delete")
+            x=sp.getoutput("docker rmi -f "+c)
+        elif(n==7):
+            print("Enter the container file location like <container_name/ID:file_path>")
+            src=input("Enter source file location/path: ")
+            dest=input("Enter destination file location/path: ")
+            c=input("container name/id: ")
+            client.containers.get(c).start()
+            sp.getoutput("docker cp "+src+" "+dest)
+        elif(n==6):
+            sp.getoutput("docker rm `docker ps -a -q`")
+            sp.getoutput("docker ps -a")
+            print("containers were deleted")
+        n=int(input("Enter option to work with docker: "))
 def webserver():
     sp.getoutput('systemctl start httpd')
     print("web server started")
@@ -136,20 +152,18 @@ def aws():
     while(n):
         if(n==6):
             name=input("KeyPair name: ")
-            ec2.create_key_pair(KeyName=key)
+            result=ec2.create_key_pair(KeyName=name)
             print("key created")
-        if(n==1):
+        elif(n==1):
             image=input("Image_id ('ami-xxxx':")
             inst_type=input("Instance_type :")
             count=int(input("Count :"))
             key=input("KeyName :")
-            '''ec2=boto3.resource('ec2',region_name=region,aws_access_key_id=access,aws_secret_access_key=key)'''
             result=ec2.create_instances(MaxCount=count,MinCount=1,ImageId=image,InstanceType=inst_type,KeyName=key)
             print("Instance created with"+result[0].instance_id)
         elif(n==2):
             name=input("Enter unique bucket name :")
             loc=input("Region")
-            '''s3=boto3.resource('s3',region_name=region,aws_access_key_id=access,aws_secret_access_key=key)'''
             s3.create_bucket(Bucket=name,CreateBucketConfiguration={'LocationConstraint':loc})
         elif(n==3):
             size=int(input("Size :"))
@@ -172,7 +186,7 @@ def aws():
             f=input("FIle: ")
             obj=input("Object name: ")
             s3=session.client('s3')
-            response=s3.upload_file(f,bucket,obj)
+            response=s3.Bucket(bucket).upload_file(f,obj)
             print("file uploaded")
         n=int(input("Enter choice (0 to quit): "))
 def partitions():
@@ -198,10 +212,10 @@ if(__name__=='__main__'):
     dl={1:date,2:cal,3:dataname,4:dataname,5:webserver,6:docker,7:partitions,8:aws}
     if(n1=='r'):
         ip=input("Enter ip address of remote machine: ")
-        x=sp.getstatusoutput('ssh '+ip+' python3 /root/remote.py')
-        if(x):
-            sp.getoutput('scp remote.py '+ip+':/root')
-            x=sp.getstatusoutput('ssh '+ip+' python3 /root/remote.py')
+        x=sp.run('ssh '+ip+' python3 remote.py',shell=True)
+        if(x.returncode):
+            sp.getoutput('scp remote.py '+ip+':remote.py')
+        x=sp.run('ssh '+ip+' python3 remote.py',shell=True)
     elif(n1=='l'):
         n=int(input("Enter which option you want: "))
         while(n):
