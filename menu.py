@@ -1,28 +1,3 @@
-'''import subprocess as sp
-import xml.etree.ElementTree as et
-
-print("WELCOME".center(60,'*'))
-print("menu is \
-	1.date \
-	2.cal \
-	3.configure and start datanode \
-	4.configure ,start namenode \
-	5.start webserver \
-        6.start and launch docker container")
-n=int(input("Enter which option you want"))
-n1=input("Choose local or remote execution(l/r)")
-
-dl={1:date,2:cal,3:dataname,4:dataname,5:webserver,6:docker}
-if(n1=='r'):
-    ip=input("Enter ip address of remote machine")
-    x=sp.getstatusoutput('ssh '+ip+' python3 /root/menu.py')
-    if(x):
-        sp.getoutput('scp menu.py '+ip+':/root')
-    x=sp.getstatusoutput('ssh '+ip+' python3 /root/menu.py'+n)
-elif(n1=='l'):
-    result=dl[n]
-    result()'''
-
 def date():
     print(sp.getoutput('date'))
 
@@ -86,7 +61,6 @@ def docker():
             6.delete all containers\n \
             7.copy files between  base os and conatiner")
     n=int(input("choose which u want : "))
-<<<<<<< HEAD
     while(n):
         if(n==1):
             image=input('Enter image name with version : ')
@@ -131,38 +105,6 @@ def docker():
             sp.getoutput("docker ps -a")
             print("containers were deleted")
         n=int(input("Enter option to work with docker: "))
-=======
-    if(n==1):
-        image=input('Enter image name with version : ')
-        sp.getoutput('docker pull '+image)
-    elif(n==2):
-        print(sp.getoutput("docker images"))
-        container=input("Enter image to launch with name optionally as 'image name_to_container': ")
-        container=container.split()
-        print(container)
-        x=sp.getstatusoutput('docker run -it --name '+container[1]+" "+container[0])
-        print(x)
-    elif(n==3):
-        print(sp.getoutput("docker ps -a"))
-        s=input("[better to enter the container name]")
-        sp.getoutput("docker start "+s)
-        sp.getoutput("docker attach "+s)
-    elif(n==4):
-        c=input("Enter which container to delete : ")
-        sp.getoutput("docker rm -f "+c)
-    elif(n==5):
-        c=input("Enter which to delete to delete")
-        sp.getoutput("docker rmi -f "+c)
-    elif(n==7):
-        print("Enter the container file location like <container_name/ID:file_path>")
-        src=input("Enter source file location/path: ")
-        dest=input("Enter destination file location/path: ")
-        sp.getoutput("docker cp "+src+" "+dest)
-    elif(n==6):
-        sp.getoutput("docker rm `docker ps -a -q`")
-        sp.getoutput("docker ps -a")
-        print("containers were deleted")
->>>>>>> e9f407b57bcbf1542bb99ac38d27fe3b3e7e432e
 def webserver():
     sp.getoutput('systemctl start httpd')
     print("web server started")
@@ -222,8 +164,8 @@ def aws():
             response=s3.Bucket(bucket).upload_file(f,obj)
             print("file uploaded")
         n=int(input("Enter choice (0 to quit): "))
-def partitions():
-    print("welcome to ")
+'''def partitions():
+    print("welcome to ")'''
 
 if(__name__=='__main__'):
     import subprocess as sp
@@ -237,12 +179,11 @@ if(__name__=='__main__'):
         4.configure ,start namenode \n \
         5.start webserver \n\
         6.start and launch docker container\n\
-        7.make partitions\n\
-        8.working with aws")
+        7.working with aws")
     #=int(input("Enter which option you want: "))
     n1=input("Choose local or remote execution(l/r): ")
 
-    dl={1:date,2:cal,3:dataname,4:dataname,5:webserver,6:docker,7:partitions,8:aws}
+    dl={1:date,2:cal,3:dataname,4:dataname,5:webserver,6:docker,7:aws}
     if(n1=='r'):
         ip=input("Enter ip address of remote machine: ")
         x=sp.run('ssh '+ip+' python3 remote.py',shell=True)
