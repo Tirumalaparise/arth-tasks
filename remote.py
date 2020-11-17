@@ -1,28 +1,3 @@
-'''import subprocess as sp
-import xml.etree.ElementTree as et
-
-print("WELCOME".center(60,'*'))
-print("menu is \
-	1.date \
-	2.cal \
-	3.configure and start datanode \
-	4.configure ,start namenode \
-	5.start webserver \
-        6.start and launch docker container")
-n=int(input("Enter which option you want"))
-n1=input("Choose local or remote execution(l/r)")
-
-dl={1:date,2:cal,3:dataname,4:dataname,5:webserver,6:docker}
-if(n1=='r'):
-    ip=input("Enter ip address of remote machine")
-    x=sp.getstatusoutput('ssh '+ip+' python3 /root/menu.py')
-    if(x):
-        sp.getoutput('scp menu.py '+ip+':/root')
-    x=sp.getstatusoutput('ssh '+ip+' python3 /root/menu.py'+n)
-elif(n1=='l'):
-    result=dl[n]
-    result()'''
-
 def date():
     sp.getoutput('date')
 
@@ -89,7 +64,7 @@ def docker():
         sp.getoutput('docker pull '+image)
     elif(n==2):
         print(sp.getoutput("docker images"))
-        container=input("Enter image to launch with name optionally as 'image n                          ame_to_container': ")
+        container=input("Enter image to launch with name optionally as 'image name_to_container': ")
         container=container.split()
         print(container)
         x=sp.getstatusoutput('docker run -it --name '+container[1]+" "+container[0])
@@ -175,8 +150,8 @@ def aws():
             response=s3.upload_file(f,bucket,obj)
             print("file uploaded")
         n=int(input("Enter choice (0 to quit): "))
-def partitions():
-    print("welcome to ")
+#def partitions():
+ #   print("welcome to ")
 
 if(__name__=='__main__'):
     import subprocess as sp
@@ -190,12 +165,11 @@ if(__name__=='__main__'):
         4.configure ,start namenode \n \
         5.start webserver \n\
         6.start and launch docker container\n\
-        7.make partitions\n\
-        8.working with aws")'''
+        7.working with aws")'''
     #=int(input("Enter which option you want: "))
     #n1=input("Choose local or remote execution(l/r): ")
 
-    dl={1:date,2:cal,3:dataname,4:dataname,5:webserver,6:docker,7:partitions,8:aws}
+    dl={1:date,2:cal,3:dataname,4:dataname,5:webserver,6:docker,7:aws}
     '''if(n1=='r'):
         ip=input("Enter ip address of remote machine: ")
         x=sp.getstatusoutput('ssh '+ip+' python3 /root/menu.py')
