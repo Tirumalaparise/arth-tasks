@@ -86,6 +86,7 @@ def docker():
             6.delete all containers\n \
             7.copy files between  base os and conatiner")
     n=int(input("choose which u want : "))
+<<<<<<< HEAD
     while(n):
         if(n==1):
             image=input('Enter image name with version : ')
@@ -130,6 +131,38 @@ def docker():
             sp.getoutput("docker ps -a")
             print("containers were deleted")
         n=int(input("Enter option to work with docker: "))
+=======
+    if(n==1):
+        image=input('Enter image name with version : ')
+        sp.getoutput('docker pull '+image)
+    elif(n==2):
+        print(sp.getoutput("docker images"))
+        container=input("Enter image to launch with name optionally as 'image name_to_container': ")
+        container=container.split()
+        print(container)
+        x=sp.getstatusoutput('docker run -it --name '+container[1]+" "+container[0])
+        print(x)
+    elif(n==3):
+        print(sp.getoutput("docker ps -a"))
+        s=input("[better to enter the container name]")
+        sp.getoutput("docker start "+s)
+        sp.getoutput("docker attach "+s)
+    elif(n==4):
+        c=input("Enter which container to delete : ")
+        sp.getoutput("docker rm -f "+c)
+    elif(n==5):
+        c=input("Enter which to delete to delete")
+        sp.getoutput("docker rmi -f "+c)
+    elif(n==7):
+        print("Enter the container file location like <container_name/ID:file_path>")
+        src=input("Enter source file location/path: ")
+        dest=input("Enter destination file location/path: ")
+        sp.getoutput("docker cp "+src+" "+dest)
+    elif(n==6):
+        sp.getoutput("docker rm `docker ps -a -q`")
+        sp.getoutput("docker ps -a")
+        print("containers were deleted")
+>>>>>>> e9f407b57bcbf1542bb99ac38d27fe3b3e7e432e
 def webserver():
     sp.getoutput('systemctl start httpd')
     print("web server started")
@@ -167,9 +200,9 @@ def aws():
             s3.create_bucket(Bucket=name,CreateBucketConfiguration={'LocationConstraint':loc})
         elif(n==3):
             size=int(input("Size :"))
-            AZ=input("Availability Zone :")
+            aZ=input("Availability Zone :")
             t=input('VOlumeType:like (gp2) :')
-            vol=ec2.create_volume(AvailabilityZone=AZ,Size=size,VolumeType=t)
+            vol=ec2.create_volume(AvailabilityZone=aZ,Size=size,VolumeType=t)
             print("volume created with id"+vol.volume_id)
         elif(n==4):
             vol=input("VOlume-id: ")
@@ -177,8 +210,8 @@ def aws():
             d=input("device-name(/dev/xvdf): ")
             if(d is None):
                 d='/dev/xvdf'
-            V=ec2.Volume(vol)
-            response=V.attach_to_instance(InstanceId=instance,Device=d)
+            v=ec2.Volume(vol)
+            response=v.attach_to_instance(InstanceId=instance,Device=d)
             print("Volume attached")
 
         elif(n==5):
