@@ -113,7 +113,7 @@ def aws():
     access=input("aws_access_key_id :")
     key=input("aws_secret_key :")
     region=input("region :")
-    s3=boto3.resource('s3',region_name=region,aws_access_key_id=access,aws_secret_access_key= key)
+    s3=boto3.resource('s3',region_name=region,aws_access_key_id=access,aws_secret_access_key= key)#c=boto3.DEFAULT_SESSION.get_credentials(),c.access_key='xxxx',c..secret_key='xxxx'
     ec2=boto3.resource('ec2',region_name=region,aws_access_key_id=access,aws_secret_access_key=key)
     session=boto3.session.Session(aws_access_key_id=access,aws_secret_access_key=key,region_name=region)
     print('1.create an EC2 instance\n \
