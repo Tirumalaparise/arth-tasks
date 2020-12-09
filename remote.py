@@ -1,25 +1,8 @@
 def date():
-    print(sp.getoutput('date'))
+    sp.getoutput('date')
 
 def cal():
-    print(sp.getoutput('cal'))
-def client():
-    ip=input("Enter namenode ip: ")
-    core=et.parse('/etc/hadoop/core-site.xml')
-    croot=core.getroot()
-    if(len(croot)>=1):
-        croot[0][1]=='hdfs://'+ip
-    else:
-        prop=et.Element("property")
-        name=et.Element("name")
-        value=et.Element("value")
-        name.text="fs.default.name"
-        value.text='hdfs://'+ip
-        prop.append(name)
-        prop.append(value)
-        croot.append(prop)
-        core.write('/etc/hadoop/core-site.xml',encoding='utf-8',xml_declaration=True)
-    print('Configured as client....')
+    sp.getoutput('cal')
 
 def dataname():
     if(n==3):
@@ -28,14 +11,14 @@ def dataname():
         string="name"
     out=sp.getoutput('jps')
     out=out.split()
-    ip=input("Enter namenode ip with port number: ")
-    folder=input("Enter distributed folder: ")
+    ip=input("Enter namenode ip")
+    folder=input("Enter distributed folder")
     core=et.parse('/etc/hadoop/core-site.xml')
     hdfs=et.parse('/etc/hadoop/hdfs-site.xml')
     croot=core.getroot()
     hroot=hdfs.getroot()
     if(len(croot)>=1 and len(hroot)>=1):
-        if(croot[0][1]=='hdfs://'+ip and hroot[0][1]==folder and hroot[0][0]=='dfs.'+string+'.dir'):
+        if(croot[0][1]=='hdfs://'+ip+':9001' and hroot[0][1]==folder and hroot[0][0]=='dfs.'+string+'.dir'):
 
             if(('DataNode' in out) or ('NameNode' in out)):
                 print(string+"node is already running")
@@ -44,31 +27,29 @@ def dataname():
         else:
             sp.getstatusoutput('hadoop-daemon.sh stop datanode')
             sp.getstatusoutput('hadoop-daemon.sh stop namenode')
-            croot[0][1]=='hdfs://'+ip
+            croot[0][1]=='hdfs://'+ip+':9001'
             hroot[0][1]==folder
             hroot[0][0]=='dfs.'+string+'.dir'
-            core.write('/etc/hadoop/core-site.xml',ncoding='utf-8',xml_declaration=True)
-            hdfs.write("/etc/hadoop/hdfs-site.xml",encoding='utf-8',xml_declaration=True)
+            core.write('/etc/hadoop/core-site.xml')
+            hdfs.write("/etc/hadoop/hdfs-site.xml")
             sp.getoutput("hadoop-daemon.sh start "+string+"node")
     else:
         prop=et.Element("property")
         name=et.Element("name")
         value=et.Element("value")
         name.text="fs.default.name"
-        value.text='hdfs://'+ip
+        value.text='hdfs://'+ip+':9001'
         prop.append(name)
         prop.append(value)
         croot.append(prop)
-        core.write('/etc/hadoop/core-site.xml',encoding='utf-8',xml_declaration=True)
+        core.write('/etc/hadoop/core-site.xml')
         name.text="dfs."+string+'.dir'
         value.text=folder
-        hdfs.write('/etc/hadoop/hdfs-site.xml',encoding='utf-8',xml_declaration=True)
+        hdfs.write('/etc/hadoop/hdfs-site.xml')
         sp.getoutput("hadoop-daemon.sh start "+string+"node")
     print(string+"node is running")
-    print(sp.getoutput('jps'))
+    sp.getoutput('jps')
 def docker():
-    import docker
-    client=docker.from_env()
     sp.getoutput("systemctl start docker")
     print("1.pull an image\n \
             2.start a new container\n \
@@ -78,58 +59,12 @@ def docker():
             6.delete all containers\n \
             7.copy files between  base os and conatiner")
     n=int(input("choose which u want : "))
-<<<<<<< HEAD
-    while(n):
-        if(n==1):
-            image=input('Enter image name with version : ')
-            sp.getoutput('docker pull '+image)
-            print(client.images.list())
-        elif(n==2):
-            print('exiting images are: ')
-            for i in client.images.list():
-                print(i.tags[0],'\t',end="")
-            #print(sp.getoutput("docker images"))
-            container=input("\nImage name <Image tag_name>: ")
-            container=container.split()
-            #client.containers.run(container)
-            #print(container)
-            if(len(container)==2):
-                x=sp.run('docker run -it --name '+container[1]+" "+container[0],shell=True)
-            else:
-                x=sp.run('docker run -it'+container[0],shell=True)
-            print(x)
-        elif(n==3):
-            print(sp.getoutput("docker ps -a")) #client.containers.list(all)
-            s=input("container name/id: ")
-            x=sp.run("docker start "+s,shell=True) #conta=client.containers.start(s)
-            x=sp.run("docker attach "+s,shell=True) #conta.attach(True,True,True)
-        elif(n==4):
-            print(sp.getoutput('docker ps -a')) # client.images.list
-            c=input("Enter which container to delete : ")
-            x=sp.run("docker rm -f "+c,shell=True)
-        elif(n==5):
-            print(sp.getoutput('docker images'))
-            c=input("Enter which to delete")
-            x=sp.getoutput("docker rmi -f "+c)
-        elif(n==7):
-            print("Enter the container file location like <container_name/ID:file_path>")
-            src=input("Enter source file location/path: ")
-            dest=input("Enter destination file location/path: ")
-            c=input("container name/id: ")
-            client.containers.get(c).start()
-            sp.getoutput("docker cp "+src+" "+dest)
-        elif(n==6):
-            sp.getoutput("docker rm `docker ps -a -q`")
-            sp.getoutput("docker ps -a")
-            print("containers were deleted")
-        n=int(input("Enter option to work with docker: "))
-=======
     if(n==1):
         image=input('Enter image name with version : ')
         sp.getoutput('docker pull '+image)
     elif(n==2):
         print(sp.getoutput("docker images"))
-        container=input("Enter image to launch with name optionally as 'image name_to_container': ")
+        container=input("Enter image to launch with name optionally as 'image n                          ame_to_container': ")
         container=container.split()
         print(container)
         x=sp.getstatusoutput('docker run -it --name '+container[1]+" "+container[0])
@@ -154,44 +89,45 @@ def docker():
         sp.getoutput("docker rm `docker ps -a -q`")
         sp.getoutput("docker ps -a")
         print("containers were deleted")
->>>>>>> 7de72ca3e3c989ec80a1256ebce402e9d5a52ddb
 def webserver():
     sp.getoutput('systemctl start httpd')
     print("web server started")
 def aws():
     import boto3
-    access=input("aws_access_key_id(press enter to read from credentials,config files):")
+    access=input("aws_access_key_id(press enter to read from credentials,config files) :")
     key=input("aws_secret_key :")
     region=input("region :")
     if(access and key and region):
         s3=boto3.resource('s3',region_name=region,aws_access_key_id=access,aws_secret_access_key= key)
         ec2=boto3.resource('ec2',region_name=region,aws_access_key_id=access,aws_secret_access_key=key)
         session=boto3.session.Session(aws_access_key_id=access,aws_secret_access_key=key,region_name=region)
-    else:#uses credentials from config,credential files 
+    else:
         s3=boto3.resource('s3')
         ec2=boto3.resource('ec2')
     print('1.create an EC2 instance\n \
-            2.create security group\n \
+            2.create security-group\n\
             3.create S3 instance\n \
             4.Create EBS volume\n \
             5.Attach EBS volume\n \
             6.upload to S3 bucket\n\
-            7.Create key-pair\n \
-            8.create Cloud-front\
+            7.Create key-pair\n\
+            8.create Clodfront\n\
+            9.Add ingree or egree rules\
             ')
     n=int(input('Enter your option'))
     while(n):
-        if(n==6):
+        if(n==7):
             name=input("KeyPair name: ")
-            result=ec2.create_key_pair(KeyName=name)
+            ec2.create_key_pair(KeyName=key)
             print("key created")
-        elif(n==1):
-            image=input("Image_id ('ami-xxxx'): ")
-            inst_type=input("Instance_type: ")
-            count=int(input("Count: "))
-            key=input("KeyName: ")
+        if(n==1):
+            image=input("Image_id ('ami-xxxx':")
+            inst_type=input("Instance_type :")
+            count=int(input("Count :"))
+            key=input("KeyName :")
             sg=input('Securitygroup Ids(separated by space): ')
             sg=sg.split()
+            '''ec2=boto3.resource('ec2',region_name=region,aws_access_key_id=access,aws_secret_access_key=key)'''
             result=ec2.create_instances(MaxCount=count,MinCount=1,SecurityGroupIds=sg,ImageId=image,InstanceType=inst_type,KeyName=key)
             print("Instance created with"+result[0].instance_id)
         elif(n==2):
@@ -203,19 +139,21 @@ def aws():
             d=input('Add /Remove inbound rules(A/R): ')
             
             i=input('Security group id: ')
-            Ip=input('CidrIp(press Enter to skip): ')
-            sgname=input('Securitygroup Name: ')
+            Ip=input('CidrIp(press ENTER to skip): ')
+            sgn=input('Securitygroup name: ')
             fport=input('FromPort/code: ')
             tport=input('ToPort/code: ')
             protocol=input('Protocol: ')
             sg=ec2.SecurityGroup(i)
             if(d=='A'):
-                x=sg.authorize_ingress(CidrIp=Ip or '',GroupName=sgname or '',FromPort=fport,ToPort=tport,IpProtocol=protocol)
+                x=sg.authorize_ingress(CidrIp=Ip or '',GroupName=sgn,FromPort=fport,ToPort=tport,IpProtocol=protocol)
             elif(d=='R'):
-                x=sg.revoke_ingress(CidrIp=Ip or '',GroupName=sgname or '',FromPort=fport,ToPort=tport,IpProtocol=protocol)
+                x=sg.revoke_ingress(CidrIp=Ip or '',GroupName=sgn,FromPort=fport,ToPort=tport,IpProtocol=protocol)
+
         elif(n==3):
             name=input("Enter unique bucket name :")
             loc=input("Region")
+            '''s3=boto3.resource('s3',region_name=region,aws_access_key_id=access,aws_secret_access_key=key)'''
             s3.create_bucket(Bucket=name,CreateBucketConfiguration={'LocationConstraint':loc})
         elif(n==4):
             size=int(input("Size :"))
@@ -238,10 +176,9 @@ def aws():
             f=input("FIle: ")
             obj=input("Object name: ")
             s3=session.client('s3')
-            response=s3.Bucket(bucket).upload_file(f,obj)
+            response=s3.upload_file(f,bucket,obj)
             print("file uploaded")
         n=int(input("Enter choice (0 to quit): "))
-<<<<<<< HEAD
 def partitions():
     import time
     print('1:list available partitions\t  2:create new partition\t \
@@ -249,7 +186,7 @@ def partitions():
             4.create logical volume\t 5.create vg\t 6.create pv\t 7.format,mount partition(or lv)\t 8.extend lv\t 9.shrink lv')
     n=int(input('Enter option(0 to quit): '))
     while(1<=n<=3):
-        disk=input('Disk name: ') 
+        disk=input('Disk name: ')
         l=['fdisk',disk]
         x=sp.Popen(l,stdin=sp.PIPE,stdout=sp.PIPE,stderr=sp.STDOUT)
         time.sleep(5)
@@ -317,7 +254,7 @@ def partitions():
             else:
                 print('lv created')
                 print(sp.getoutput('lvdisplay '+vg+'/'+name))
-        elif(n==5): #vgcreate
+        elif(n==5):
             pv=input('Enter physical vols(separated by space): ')
             pv=pv.split()
             name=input('Name of vg(for creating or extending): ')
@@ -339,7 +276,7 @@ def partitions():
             sp.getoutput('mkfs.'+f+' '+part)
             print('format done,mounting...')
             d=input('mount point(creates new dir or uses existing dir): ')
-            
+
             x=sp.getoutput('mkdir '+d)
             sp.getstatusoutput('mount '+part+' '+d)
             if(x[0]):
@@ -362,24 +299,20 @@ def partitions():
             x=sp.call(['e2fsck','-f',lv])#e2fsck need terminal for interactive repairs
             if(not(x)):
                 actual=input('Actual LV size(M,G): ')
-                
+
                 size=input('size to reduce(M,G): ')
                 x=actual[-1];y=size[-1];
                 actual=actual[:-1];size=size[:-1]
                 if(x==y):
                     d=int(float(actual)-float(size))
                     d=str(d)+x
-                    #size=size+y
+                    size=size+y
                 else:
                     actual=float(actual)*1024
                     d=int(float(actual)-float(size))
                     d=str(d)+'M'
-                    #size=size+y
-                #print(size,d)
-=======
-#def partitions():
- #   print("welcome to ")
->>>>>>> 7de72ca3e3c989ec80a1256ebce402e9d5a52ddb
+                    size=size+y
+                print(size,d)
 
                 sp.getoutput('resize2fs '+lv+' '+d)
                 x=sp.Popen(['lvreduce',lv,'--size',d],stdin=sp.PIPE,stdout=sp.PIPE)
@@ -388,50 +321,36 @@ def partitions():
                 print(sp.getoutput('lvdisplay '+lv))
                 print('mounting again...')
                 x=sp.getoutput('mount '+lv+' '+mp)
-    n=int(input('Enter option(0 for quit): '))
-    
+    n=int(input('Enter option(0 for quit): '))                
+
 if(__name__=='__main__'):
     import subprocess as sp
     import xml.etree.ElementTree as et
-    print("WELCOME".center(60,'*'))
-    print("menu is \n \
+  
+    print("WELCOME TO REMOTE EXECUTION".center(70,'*'))
+    '''print("menu is \n \
         1.date \n \
         2.cal \n \
         3.configure and start datanode \n \
-
         4.configure ,start namenode \n \
-<<<<<<< HEAD
-        5.configure as hadoop client\n\
-        6.start webserver \n\
-        7.start and launch docker container\n\
-        8.make partitions\n\
-        9.working with aws")
-=======
         5.start webserver \n\
         6.start and launch docker container\n\
-        7.working with aws")'''
->>>>>>> 7de72ca3e3c989ec80a1256ebce402e9d5a52ddb
+        7.make partitions\n\
+        8.working with aws")'''
     #=int(input("Enter which option you want: "))
-    n1=input("Choose local or remote execution(l/r): ")
+    #n1=input("Choose local or remote execution(l/r): ")
 
-<<<<<<< HEAD
-    dl={1:date,2:cal,3:dataname,4:dataname,5:client,6:webserver,7:docker,8:partitions,9:aws}
-    if(n1=='r'):
-=======
-    dl={1:date,2:cal,3:dataname,4:dataname,5:webserver,6:docker,7:aws}
+    dl={1:date,2:cal,3:dataname,4:dataname,5:webserver,6:docker,7:partitions,8:aws}
     '''if(n1=='r'):
->>>>>>> 7de72ca3e3c989ec80a1256ebce402e9d5a52ddb
         ip=input("Enter ip address of remote machine: ")
-        x=sp.run('ssh '+ip+' python3 remote.py',shell=True)
-        if(x.returncode):
-            sp.getoutput('scp remote.py '+ip+':remote.py')
-        x=sp.run('ssh '+ip+' python3 remote.py',shell=True)
-    elif(n1=='l'):
-        n=int(input("Enter which option you want: "))
-        while(n):
+        x=sp.getstatusoutput('ssh '+ip+' python3 /root/menu.py')
+        if(x):
+            sp.getoutput('scp menu.py '+ip+':/root')
+            x=sp.getstatusoutput('ssh '+ip+' python3 /root/menu.py')'''
+    #elif(n1=='l'):
+    n=int(input("Enter which option you want(0 to quit): "))
+    while(n):
             #=int(input("Enter which option you want"))
-            result=dl[n]()
-            n=int(input("Enter choice(0 to quit): "))
-    else:
-        print('Enter valid letter')
+        result=dl[n]()
+        n=int(input("Enter choice(0 to quit): "))
 
