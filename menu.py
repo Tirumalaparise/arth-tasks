@@ -130,6 +130,7 @@ def aws():
     access=input("aws_access_key_id(press enter to read from credentials,config files):")
     key=input("aws_secret_key :")
     region=input("region :")
+<<<<<<< HEAD
     if(access and key and region):
         s3=boto3.resource('s3',region_name=region,aws_access_key_id=access,aws_secret_access_key= key)
         ec2=boto3.resource('ec2',region_name=region,aws_access_key_id=access,aws_secret_access_key=key)
@@ -137,6 +138,11 @@ def aws():
     else:#uses credentials from config,credential files 
         s3=boto3.resource('s3')
         ec2=boto3.resource('ec2')
+=======
+    s3=boto3.resource('s3',region_name=region,aws_access_key_id=access,aws_secret_access_key= key)#c=boto3.DEFAULT_SESSION.get_credentials(),c.access_key='xxxx',c..secret_key='xxxx'
+    ec2=boto3.resource('ec2',region_name=region,aws_access_key_id=access,aws_secret_access_key=key)
+    session=boto3.session.Session(aws_access_key_id=access,aws_secret_access_key=key,region_name=region)
+>>>>>>> 7de72ca3e3c989ec80a1256ebce402e9d5a52ddb
     print('1.create an EC2 instance\n \
             2.create security group\n \
             3.create S3 instance\n \
@@ -208,6 +214,7 @@ def aws():
             response=s3.Bucket(bucket).upload_file(f,obj)
             print("file uploaded")
         n=int(input("Enter choice (0 to quit): "))
+<<<<<<< HEAD
 def partitions():
     import time
     print('1:list available partitions\t  2:create new partition\t \
@@ -342,6 +349,10 @@ def partitions():
                     d=str(d)+'M'
                     #size=size+y
                 #print(size,d)
+=======
+'''def partitions():
+    print("welcome to ")'''
+>>>>>>> 7de72ca3e3c989ec80a1256ebce402e9d5a52ddb
 
                 sp.getoutput('resize2fs '+lv+' '+d)
                 x=sp.Popen(['lvreduce',lv,'--size',d],stdin=sp.PIPE,stdout=sp.PIPE)
@@ -362,6 +373,7 @@ if(__name__=='__main__'):
         3.configure and start datanode \n \
 
         4.configure ,start namenode \n \
+<<<<<<< HEAD
         5.configure as hadoop client\n\
         6.start webserver \n\
         7.start and launch docker container\n\
@@ -371,6 +383,15 @@ if(__name__=='__main__'):
     n1=input("Choose local or remote execution(l/r): ")
 
     dl={1:date,2:cal,3:dataname,4:dataname,5:client,6:webserver,7:docker,8:partitions,9:aws}
+=======
+        5.start webserver \n\
+        6.start and launch docker container\n\
+        7.working with aws")
+    #=int(input("Enter which option you want: "))
+    n1=input("Choose local or remote execution(l/r): ")
+
+    dl={1:date,2:cal,3:dataname,4:dataname,5:webserver,6:docker,7:aws}
+>>>>>>> 7de72ca3e3c989ec80a1256ebce402e9d5a52ddb
     if(n1=='r'):
         ip=input("Enter ip address of remote machine: ")
         x=sp.run('ssh '+ip+' python3 remote.py',shell=True)

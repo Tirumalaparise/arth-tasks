@@ -78,6 +78,7 @@ def docker():
             6.delete all containers\n \
             7.copy files between  base os and conatiner")
     n=int(input("choose which u want : "))
+<<<<<<< HEAD
     while(n):
         if(n==1):
             image=input('Enter image name with version : ')
@@ -122,6 +123,38 @@ def docker():
             sp.getoutput("docker ps -a")
             print("containers were deleted")
         n=int(input("Enter option to work with docker: "))
+=======
+    if(n==1):
+        image=input('Enter image name with version : ')
+        sp.getoutput('docker pull '+image)
+    elif(n==2):
+        print(sp.getoutput("docker images"))
+        container=input("Enter image to launch with name optionally as 'image name_to_container': ")
+        container=container.split()
+        print(container)
+        x=sp.getstatusoutput('docker run -it --name '+container[1]+" "+container[0])
+        print(x)
+    elif(n==3):
+        print(sp.getoutput("docker ps -a"))
+        s=input("[better to enter the container name]")
+        sp.getoutput("docker start "+s)
+        sp.getoutput("docker attach "+s)
+    elif(n==4):
+        c=input("Enter which container to delete : ")
+        sp.getoutput("docker rm -f "+c)
+    elif(n==5):
+        c=input("Enter which to delete to delete")
+        sp.getoutput("docker rmi -f "+c)
+    elif(n==7):
+        print("Enter the container file location like <container_name/ID:file_path>")
+        src=input("Enter source file location/path: ")
+        dest=input("Enter destination file location/path: ")
+        sp.getoutput("docker cp "+src+" "+dest)
+    elif(n==6):
+        sp.getoutput("docker rm `docker ps -a -q`")
+        sp.getoutput("docker ps -a")
+        print("containers were deleted")
+>>>>>>> 7de72ca3e3c989ec80a1256ebce402e9d5a52ddb
 def webserver():
     sp.getoutput('systemctl start httpd')
     print("web server started")
@@ -208,6 +241,7 @@ def aws():
             response=s3.Bucket(bucket).upload_file(f,obj)
             print("file uploaded")
         n=int(input("Enter choice (0 to quit): "))
+<<<<<<< HEAD
 def partitions():
     import time
     print('1:list available partitions\t  2:create new partition\t \
@@ -342,6 +376,10 @@ def partitions():
                     d=str(d)+'M'
                     #size=size+y
                 #print(size,d)
+=======
+#def partitions():
+ #   print("welcome to ")
+>>>>>>> 7de72ca3e3c989ec80a1256ebce402e9d5a52ddb
 
                 sp.getoutput('resize2fs '+lv+' '+d)
                 x=sp.Popen(['lvreduce',lv,'--size',d],stdin=sp.PIPE,stdout=sp.PIPE)
@@ -362,16 +400,27 @@ if(__name__=='__main__'):
         3.configure and start datanode \n \
 
         4.configure ,start namenode \n \
+<<<<<<< HEAD
         5.configure as hadoop client\n\
         6.start webserver \n\
         7.start and launch docker container\n\
         8.make partitions\n\
         9.working with aws")
+=======
+        5.start webserver \n\
+        6.start and launch docker container\n\
+        7.working with aws")'''
+>>>>>>> 7de72ca3e3c989ec80a1256ebce402e9d5a52ddb
     #=int(input("Enter which option you want: "))
     n1=input("Choose local or remote execution(l/r): ")
 
+<<<<<<< HEAD
     dl={1:date,2:cal,3:dataname,4:dataname,5:client,6:webserver,7:docker,8:partitions,9:aws}
     if(n1=='r'):
+=======
+    dl={1:date,2:cal,3:dataname,4:dataname,5:webserver,6:docker,7:aws}
+    '''if(n1=='r'):
+>>>>>>> 7de72ca3e3c989ec80a1256ebce402e9d5a52ddb
         ip=input("Enter ip address of remote machine: ")
         x=sp.run('ssh '+ip+' python3 remote.py',shell=True)
         if(x.returncode):
