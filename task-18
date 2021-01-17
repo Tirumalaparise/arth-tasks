@@ -1,0 +1,9 @@
+Task Description:
+🔅 Create an AWS EC2 instance
+🔅 Configure the instance with Apache Webserver.
+🔅 Download php application name “WordPress”.
+🔅 As wordpress stores data at the backend in MySQL Database server. Therefore, you need to setup a MySQL server using AWS RDS service using Free Tier.
+🔅 Provide the endpoint/connection string to the WordPress application to make it work.
+
+1.Create and Configuring EC2 instance as web server:
+First log into Aws account and go to services ,choose EC2 and create an EC2 instance .Remember to allow http requests through security group. Then connect to it .
