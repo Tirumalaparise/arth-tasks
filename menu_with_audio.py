@@ -1,10 +1,41 @@
+class myDict(dict):
+    def __missing__(self,key):
+        return key
+convert_to_int=myDict({'colon': ":",'colin':':','dot':'.','slash':'/'})
+def take_input(): #taking input from default Microphone
+    import speech_recognition as sr
+    import pyaudio
+    r=sr.Recognizer()
+    with sr.Microphone() as source:
+        r.adjust_for_ambient_noise(source)
+        print("Choose now..")
+        audio=r.listen(source)
+    try:
+        x=r.recognize_google(audio)
+    except Exception as e:
+        r=input("Have you choosen!!try again with proper pronounciation(y/n): ")
+        if(r=='y'):
+            x=take_input()
+    return x
+def combine(list_of_words):
+    '''fun for combining digits like ['one','nine','two','dot'] ==>192. and normal words
+    '''
+    out=""
+    for word in list_of_words:
+        out+=convert_to_int[word]
+    return out
+
 def date():
     print(sp.getoutput('date'))
 
 def cal():
     print(sp.getoutput('cal'))
 def client():
-    ip=input("Enter namenode ip with port num: ")
+    print("Enter namenode ip: ")
+    i=take_input()
+    print("port number: ")
+    port=take_input()
+    ip=i+":"+port
     try:
         core=et.parse('/etc/hadoop/core-site.xml')
         hdfs=et.parse('/etc/hadoop/hdfs-site.xml')
@@ -12,10 +43,10 @@ def client():
         print('Format the xml tags in conf files properly')
     croot=core.getroot()
     hroot=hdfs.getroot()
-    if(len(croot)>=1):
+    if(len(croot)>=1): #conf is done previously by this script only
         croot[0][1].text='hdfs://'+ip
     else:
-        prop=et.Element("property")
+        prop=et.Element("property") #creating three tags and appending to root
         name=et.Element("name")
         value=et.Element("value")
         name.text="fs.default.name"
@@ -45,8 +76,14 @@ def dataname():
         string="name" #conf as namenode
     out=sp.getoutput('jps')
     out=out.split()
-    ip=input("Enter namenode ip with port number: ")
-    folder=input("Enter distributed folder: ")
+    print("Enter namenode ip: ")
+    i=take_input()
+    print("port number: ")
+    port=take_input()
+    ip=i+":"+port
+    print("Entered ip is :"+ip)
+    print("Tell distributed folder(tell slash where needed): ")
+    folder=combine(take_input().split())
     try:
         core=et.parse('/etc/hadoop/core-site.xml')
         hdfs=et.parse('/etc/hadoop/hdfs-site.xml')
@@ -97,19 +134,25 @@ def docker():
             5.delete an image\n \
             6.delete all containers\n \
             7.copy files between  base os and conatiner")
-    n=int(input("choose which u want : "))
+    print("choose which u want : ")
+    n=int(take_input())
     while(n):
         if(n==1):
-            image=input('Enter image name with version(image:version): ')
+            print('Image name:' )
+            image=take_input()
+            print('with version: ')
+            ver=take_input()
+            image=image+ver
+            # splitted_input=take_input().split() #looks like ['ubuntu','colon','one','eight','dot','zero','four'] for ubuntu:18.04
+            # image=splitted_input[0]+combine(splitted_input[1:])  
             sp.getoutput('docker pull '+image)
             print(client.images.list())
         elif(n==2):
-            print('exiting images are: ')
+            print('existing images are: ')
             for i in client.images.list():
                 print(i.tags[0],'\t',end="")
-            #print(sp.getoutput("docker images"))
-            container=input("\nImage name <Image:version tag_name>: ")
-            container=container.split()
+            print("\nImage name <Image:version tag_name>: ")
+            container=take_input().split()
             #client.containers.run(container)
             #print(container)
             if(len(container)==2):
@@ -119,29 +162,37 @@ def docker():
             #print(x)
         elif(n==3):
             print(sp.getoutput("docker ps -a")) #client.containers.list(all)
-            s=input("container name/id: ")
+            print("container name: ")
+            s=take_input()
             x=sp.run("docker start "+s,shell=True) #conta=client.containers.start(s)
             x=sp.run("docker attach "+s,shell=True) #conta.attach(True,True,True)
         elif(n==4):
             print(sp.getoutput('docker ps -a')) # client.images.list
-            c=input("Enter which container to delete : ")
+            print("Enter which container to delete : ")
+            c=take_input()
             x=sp.run("docker rm -f "+c,shell=True)
         elif(n==5):
             print(sp.getoutput('docker images'))
-            c=input("Enter which to delete: ")
+            print("Enter which to delete: ")
+            # c=input("Enter which to delete: ")
+            c=take_input()
             x=sp.getoutput("docker rmi -f "+c)
         elif(n==7):
             print("Enter the container file location in the format <container_name/ID:file_path>")
-            src=input("Enter source file location/path: ")
-            dest=input("Enter destination file location/path: ")
-            c=input("container name/id: ")
+            print("Enter source file location/path: ")
+            src=combine(take_input().split())
+            print("Enter destination file location/path: ")
+            dest=combine(take_input().split())
+            print("container name/id: ")
+            c=take_input()
             client.containers.get(c).start()
             sp.getoutput("docker cp "+src+" "+dest)
         elif(n==6):
             sp.getoutput("docker rm `docker ps -a -q`")
             sp.getoutput("docker ps -a")
             print("containers were deleted")
-        n=int(input("Enter option to work with docker: "))
+        print("Enter option to work with docker: ")
+        n=int(take_input())
 def webserver():
     sp.getoutput('systemctl start httpd')
     print("web server started")
@@ -166,10 +217,12 @@ def aws():
             7.upload files to S3 bucket\n\
             8.Create key-pair\n \
             ')
-    n=int(input('Enter your option: '))
+    print('Enter your option: ')
+    n=convert_to_int[take_input()]
     while(n):
         if(n==8):#creating key-pair
-            name=input("KeyPair name: ")
+            print("KeyPair name: ")
+            name=take_input()
             try:
                 result=ec2.create_key_pair(KeyName=name)
                 print("key created")
@@ -185,8 +238,10 @@ def aws():
             result=ec2.create_instances(MaxCount=count,MinCount=1,SecurityGroupIds=sg,ImageId=image,InstanceType=inst_type,KeyName=key)
             print("Instance created with id "+result[0].instance_id)
         elif(n==2): #creating sg
-            name=input("Name for security group: ")
-            desc=input("Description: ")
+            print("Name for security group: ")
+            name=take_input()
+            print("Description: ")
+            desc=take_input()
             i=ec2.create_security_group(Description=desc,GroupName=name)
             print("security group created with id "+i.id)
         elif(n==3):#adding,removing inbound rules
@@ -207,9 +262,11 @@ def aws():
             elif(d=='R'):
                 x=sg.revoke_ingress(CidrIp=Ip or '',GroupName=sgname or '',FromPort=fport,ToPort=tport,IpProtocol=protocol)
         elif(n==4):#creating s3 bucket
-            loc=input("Region: ")
+            print("Region: ")
+            loc=take_input()
             while(True):
-                name=input("Enter unique bucket name :")
+                print("Enter unique bucket name :")
+                name=take_input()
                 try:
                     s3.create_bucket(Bucket=name,CreateBucketConfiguration={'LocationConstraint':loc})
                     break
@@ -246,23 +303,29 @@ def aws():
             print("Volume attached")
 
         elif(n==7):#uploading files to s3
-            bucket=input("Bucket : ")
-            f=input("FIle: ")
-            obj=input("Object name: ")
+            print("Bucket : ")
+            bucket=take_input()
+            print("File: ")
+            f=combine(take_input().split())#speech recognition detects "/" as flash or slash .so input is splitted and combined with /
+            print("Object name: ")
+            obj=take_input()
            #s3=session.client('s3')
             response=s3.Bucket(bucket).upload_file(f,obj)
             print("file uploaded")
-        n=int(input("Enter choice (0 to quit): "))
+        print"Enter choice (0 to quit): "))
+        n=int(take_input())
 def partitions():
     import time
     print('1:list available partitions\n2:create new partition\n \
             3.delete existed partition\n \
             4.create logical volume\n 5.create/extend vg\n 6.create pv\n 7.format,mount partition(or lv)\n 8.extend lv\n 9.shrink lv')
-    n=int(input('Enter option(0 to quit): '))
+    print('Enter option(0 to quit): '))
+    n=int(take_input())
     while(n):
         if(1<=n<=3):
-            try:
-                disk=input('Disk name: ') 
+            try: 
+                print("Disk name: ")
+                disk=combine(take_input().split())
                 l=['fdisk',disk]
                 x=sp.Popen(l,stdin=sp.PIPE,stdout=sp.PIPE,stderr=sp.STDOUT)
             #time.sleep(5)
@@ -312,7 +375,9 @@ def partitions():
 
             elif(n==3):
                 x=sp.Popen(l,stdin=sp.PIPE,stdout=sp.PIPE,stderr=sp.STDOUT)
-                num=input('Which partition(num>=1): ')+'\n'
+                print("Which partition(num>=1): ")
+                num=take_input()+'\n'
+                # num=input('Which partition(num>=1): ')+'\n'
                 inp=[b'd\n',bytes(num.encode()),b'w\n']
                 for i in inp:
                     x.stdin.write(i)
@@ -329,7 +394,8 @@ def partitions():
     #while(4<=n<=9):
         else:
             if(n==4):
-                vg=input('VG name: ')
+                print('VG name: ')
+                vg=take_input()
                 size=input('Size: ')
                 name=input('Name for lv: ')
                 x=sp.getstatusoutput('lvcreate '+vg+' --size '+size+' --name '+name)
@@ -340,6 +406,8 @@ def partitions():
                     print(sp.getoutput('lvdisplay '+vg+'/'+name))
             elif(n==5): #vgcreate
                 pv=input('Enter physical vols(separated by space): ')
+                # pv_li=take_input().split(',')
+                # pv=combine(pv_li[0].split()
                 pv=pv.split()
                 name=input('Name of vg(for creating or extending): ')
                 x=sp.getstatusoutput('vgdisplay '+name)#vg can't be created without pv
@@ -413,7 +481,10 @@ def partitions():
                     print(sp.getoutput('lvdisplay '+lv))
                     print('mounting again...')
                     x=sp.getoutput('mount '+lv+' '+mp)
-        n=int(input('Enter option(0 for quit): '))
+        print('Enter option(0 for quit): )
+        n=int(take_input())
+    
+    
     
 if(__name__=='__main__'):
     import subprocess as sp
@@ -430,22 +501,28 @@ if(__name__=='__main__'):
            8.working with partitions(static,dynamic)\n\
            9.working with aws")
     #=int(input("Enter which option you want: "))
-    n1=input("Choose local or remote execution(l/r): ")
-
+#     n1=input("Choose local or remote execution(l/r): ")
+    print("Choose local or remote execution(local/remote): ")
+    n1=take_input()
     dl={1:date,2:cal,3:dataname,4:dataname,5:client,6:webserver,7:docker,8:partitions,9:aws}
-    if(n1=='r'):
-        ip=input("Enter ip address of remote machine: ")
+    if(n1=='remote'):
+        
+#         ip=input("Enter ip address of remote machine: ")
+        print("Enter ip address of remote machine: ")
+        ip=take_input()
         x=sp.run('ssh '+ip+' python3 remote2.py',shell=True)
         if(x.returncode):
             print("transferring the file..")
             sp.getoutput('scp remote2.py '+ip+':remote2.py')
             x=sp.run('ssh '+ip+' python3 remote2.py',shell=True)
-    elif(n1=='l'):
-        n=int(input("Enter which option you want: "))
+    elif(n1=='local'):
+        print("Enter which option you want: ")
+        n=int(take_input())
         while(n):
             #=int(input("Enter which option you want"))
             result=dl[n]()
-            n=int(input("Enter choice(0 to quit): "))
+            print("Enter choice(0 to quit: ")
+            n=int(take_input())
     else:
         print('Enter valid letter')
 
