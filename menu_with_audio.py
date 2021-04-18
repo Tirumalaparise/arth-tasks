@@ -12,11 +12,12 @@ def take_input(): #taking input from default Microphone
         audio=r.listen(source)
     try:
         x=r.recognize_google(audio)
+        return x
     except Exception as e:
         r=input("Have you choosen!!try again with proper pronounciation(y/n): ")
         if(r=='y'):
             x=take_input()
-    return x
+    # return x
 def combine(list_of_words):
     '''fun for combining digits like ['one','nine','two','dot'] ==>192. and normal words
     '''
@@ -312,14 +313,14 @@ def aws():
            #s3=session.client('s3')
             response=s3.Bucket(bucket).upload_file(f,obj)
             print("file uploaded")
-        print"Enter choice (0 to quit): "))
+        print("Enter choice (0 to quit): ")
         n=int(take_input())
 def partitions():
     import time
     print('1:list available partitions\n2:create new partition\n \
             3.delete existed partition\n \
             4.create logical volume\n 5.create/extend vg\n 6.create pv\n 7.format,mount partition(or lv)\n 8.extend lv\n 9.shrink lv')
-    print('Enter option(0 to quit): '))
+    print('Enter option(0 to quit): ')
     n=int(take_input())
     while(n):
         if(1<=n<=3):
@@ -462,7 +463,7 @@ def partitions():
                     actual=input('Actual LV size(M,G): ')
                 
                     size=input('size to reduce(M,G): ')
-                    x=actual[-1];y=size[-1];
+                    x=actual[-1];y=size[-1]
                     actual=actual[:-1];size=size[:-1]
                     if(x==y):
                         d=int(float(actual)-float(size))
@@ -481,7 +482,7 @@ def partitions():
                     print(sp.getoutput('lvdisplay '+lv))
                     print('mounting again...')
                     x=sp.getoutput('mount '+lv+' '+mp)
-        print('Enter option(0 for quit): )
+        print('Enter option(0 for quit):' )
         n=int(take_input())
     
     
